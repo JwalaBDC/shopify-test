@@ -1,0 +1,9 @@
+@use "../typography/index" as *;
+
+body sticky-header header{
+    background-color: rosybrown !important;
+}
+
+.header__menu-item span{
+    font-family: $recoletaBold;
+}
