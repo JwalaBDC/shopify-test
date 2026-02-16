@@ -1,4 +1,4 @@
-name: Deploy Shopify Theme
+name: Deploy Shopify Theme (Theme Kit CI)
 
 on:
   push:
@@ -16,18 +16,18 @@ jobs:
         run: |
           curl -s https://shopify.github.io/themekit/scripts/install.py | python3
 
-      - name: Create config
+      - name: Create Theme Kit config
+        env:
+          SHOPIFY_STORE: ${{ secrets.SHOPIFY_STORE }}
+          SHOPIFY_PASSWORD: ${{ secrets.SHOPIFY_PASSWORD }}
+          SHOPIFY_THEME_ID: ${{ secrets.SHOPIFY_THEME_ID }}
         run: |
           cat > config.yml << EOF
           development:
+            store: ${SHOPIFY_STORE}
             password: ${SHOPIFY_PASSWORD}
             theme_id: "${SHOPIFY_THEME_ID}"
-            store: ${SHOPIFY_STORE}
           EOF
-        env:
-          SHOPIFY_PASSWORD: ${{ secrets.SHOPIFY_PASSWORD }}
-          SHOPIFY_THEME_ID: ${{ secrets.SHOPIFY_THEME_ID_DEV }}
-          SHOPIFY_STORE: ${{ secrets.SHOPIFY_STORE }}
 
       - name: Deploy theme
         run: theme deploy --env=development
