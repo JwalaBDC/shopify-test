@@ -1,4 +1,4 @@
-name: Deploy Shopify Theme
+name: Shopify Theme Deploy
 
 on:
   push:
@@ -10,23 +10,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
 
       - name: Install Shopify CLI
         run: npm install -g @shopify/cli @shopify/theme
 
-      - name: Deploy theme to Shopify
+      - name: Verify token
         env:
-          SHOPIFY_CLI_AUTH_TOKEN: ${{ secrets.SHOPIFY_ACCESS_TOKEN }}
-          SHOPIFY_STORE: ${{ secrets.SHOPIFY_STORE }}
+          SHOPIFY_CLI_AUTH_TOKEN: ${{ secrets.SHOPIFY_CLI_AUTH_TOKEN }}
+        run: |
+          if [ -z "$SHOPIFY_CLI_AUTH_TOKEN" ]; then
+            echo "❌ TOKEN MISSING"
+            exit 1
+          else
+            echo "✅ TOKEN FOUND"
+          fi
+
+      - name: Push theme to Shopify
+        env:
+          SHOPIFY_CLI_AUTH_TOKEN: ${{ secrets.SHOPIFY_CLI_AUTH_TOKEN }}
         run: |
           shopify theme push \
-            --store $SHOPIFY_STORE \
-            --theme ${{ secrets.SHOPIFY_THEME_ID_DEV }} \
-            --allow-live \
+            --store jwala-test.myshopify.com \
+            --path .
