@@ -10,12 +10,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Deploy to Shopify
-        uses: shopify/theme-actions/deploy@v2
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          shopify_flag_store: ${{ secrets.SHOPIFY_STORE }}
-          shopify_cli_theme_token: ${{ secrets.SHOPIFY_PASSWORD }}
-          theme_path: .
+          node-version: 20
+
+      - name: Install Shopify CLI
+        run: npm install -g @shopify/cli @shopify/theme
+
+      - name: Deploy theme to Shopify
+        env:
+          SHOPIFY_CLI_AUTH_TOKEN: ${{ secrets.SHOPIFY_ACCESS_TOKEN }}
+          SHOPIFY_STORE: ${{ secrets.SHOPIFY_STORE }}
+        run: |
+          shopify theme push \
+            --store $SHOPIFY_STORE \
+            --theme ${{ secrets.SHOPIFY_THEME_ID_DEV }} \
+            --allow-live \
