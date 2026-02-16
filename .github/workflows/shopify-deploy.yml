@@ -1,4 +1,4 @@
-name: Deploy Shopify Theme (CI – Theme Kit)
+name: Deploy Shopify Theme
 
 on:
   push:
@@ -8,32 +8,22 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    shell: bash
+
+    env:
+      SHOPIFY_FLAG_STORE: ${{ secrets.SHOPIFY_STORE }}
+      SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_ACCESS_TOKEN }}
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Install Theme Kit
-        run: |
-          curl -s https://shopify.github.io/themekit/scripts/install.py | python3
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
-      - name: Create Theme Kit config
-        env:
-          SHOPIFY_STORE: ${{ secrets.SHOPIFY_STORE }}
-          SHOPIFY_PASSWORD: ${{ secrets.SHOPIFY_PASSWORD }}
-          SHOPIFY_THEME_ID: ${{ secrets.SHOPIFY_THEME_ID }}
-        run: |
-          echo "Creating config.yml"
-          cat > config.yml <<EOF
-development:
-  store: ${SHOPIFY_STORE}
-  password: ${SHOPIFY_PASSWORD}
-  theme_id: "${SHOPIFY_THEME_ID}"
-EOF
+      - name: Install Shopify CLI
+        run: npm install -g @shopify/cli @shopify/theme
 
-      - name: Debug config.yml (safe)
-        run: |
-          sed 's/password:.*/password: ***MASKED***/' config.yml
-
-      - name: Deploy theme
-        run: theme deploy --env=development
+      - name: Deploy theme to Shopify
+        run: shopify theme push --theme ${{ secrets.SHOPIFY_THEME_ID_LIVE }} --allow-live
