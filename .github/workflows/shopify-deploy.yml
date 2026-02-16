@@ -1,4 +1,4 @@
-name: Deploy Shopify Theme (Theme Kit CI)
+name: Deploy Shopify Theme (CI – Theme Kit)
 
 on:
   push:
@@ -8,6 +8,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    shell: bash
 
     steps:
       - uses: actions/checkout@v4
@@ -22,12 +23,17 @@ jobs:
           SHOPIFY_PASSWORD: ${{ secrets.SHOPIFY_PASSWORD }}
           SHOPIFY_THEME_ID: ${{ secrets.SHOPIFY_THEME_ID }}
         run: |
-          cat > config.yml << EOF
-          development:
-            store: ${SHOPIFY_STORE}
-            password: ${SHOPIFY_PASSWORD}
-            theme_id: "${SHOPIFY_THEME_ID}"
-          EOF
+          echo "Creating config.yml"
+          cat > config.yml <<EOF
+development:
+  store: ${SHOPIFY_STORE}
+  password: ${SHOPIFY_PASSWORD}
+  theme_id: "${SHOPIFY_THEME_ID}"
+EOF
+
+      - name: Debug config.yml (safe)
+        run: |
+          sed 's/password:.*/password: ***MASKED***/' config.yml
 
       - name: Deploy theme
         run: theme deploy --env=development
