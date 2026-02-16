@@ -9,12 +9,8 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
-    env:
-      SHOPIFY_FLAG_STORE: ${{ secrets.SHOPIFY_STORE }}
-      SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_ACCESS_TOKEN }}
-
     steps:
-      - name: Checkout repository
+      - name: Checkout repo
         uses: actions/checkout@v4
 
       - name: Setup Node
@@ -26,4 +22,12 @@ jobs:
         run: npm install -g @shopify/cli @shopify/theme
 
       - name: Deploy theme to Shopify
-        run: shopify theme push --theme ${{ secrets.SHOPIFY_THEME_ID_LIVE }} --allow-live
+        env:
+          SHOPIFY_STORE: ${{ secrets.SHOPIFY_STORE }}
+          SHOPIFY_ADMIN_API_TOKEN: ${{ secrets.SHOPIFY_ADMIN_API_TOKEN }}
+        run: |
+          shopify theme push \
+            --store $SHOPIFY_STORE \
+            --theme ${{ secrets.SHOPIFY_THEME_ID }} \
+            --allow-live \
+            --no-interactive
