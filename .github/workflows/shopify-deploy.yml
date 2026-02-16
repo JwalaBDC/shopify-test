@@ -29,5 +29,4 @@ jobs:
           shopify theme push \
             --store "${{ secrets.SHOPIFY_STORE }}" \
             --theme "${{ secrets.SHOPIFY_THEME_ID }}" \
-            --allow-live \
-            --no-interactive
+            --allow-live
