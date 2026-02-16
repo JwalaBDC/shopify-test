@@ -13,19 +13,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Deploy to Shopify
+        uses: shopify/github-action-deploy-theme@v1
         with:
-          node-version: 20
-
-      - name: Install Shopify CLI
-        run: npm install -g @shopify/cli @shopify/theme
-
-      - name: Deploy theme to Shopify
-        env:
-          SHOPIFY_CLI_PARTNERS_TOKEN: ${{ secrets.SHOPIFY_ACCESS_TOKEN }}
-        run: |
-          shopify theme push \
-            --store=${{ secrets.SHOPIFY_STORE }} \
-            --allow-live \
-            --no-color
+          shopify_flag_store: ${{ secrets.SHOPIFY_STORE }}
+          shopify_cli_theme_token: ${{ secrets.SHOPIFY_PASSWORD }}
+          theme_path: .
