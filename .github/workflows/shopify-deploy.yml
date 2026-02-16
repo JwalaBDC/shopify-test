@@ -10,9 +10,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 20
 
@@ -21,11 +23,7 @@ jobs:
 
       - name: Deploy theme to Shopify
         env:
-          SHOPIFY_STORE: ${{ secrets.SHOPIFY_STORE }}
-          SHOPIFY_PASSWORD: ${{ secrets.SHOPIFY_PASSWORD }}
-          CI: true
+          SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_PASSWORD }}
+          SHOPIFY_FLAG_STORE: ${{ secrets.SHOPIFY_STORE }}
         run: |
-          shopify theme push \
-            --store="$SHOPIFY_STORE" \
-            --password="$SHOPIFY_PASSWORD" \
-            --allow-live
+          shopify theme push --allow-live
